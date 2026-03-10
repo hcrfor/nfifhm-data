@@ -426,22 +426,36 @@ function App() {
               return a.localeCompare(b);
             });
 
-            sortedPlots.forEach(plot => {
-              if (plot !== '') {
+            if (tab.id === 'herb') {
+              // 초본종은 수종명 데이터를 조사구별로 한 줄로 모아서 가독성 있게 표시
+              sortedPlots.forEach(plot => {
+                const speciesList = [...new Set(groupedByPlot[plot].map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
+                if (speciesList.length === 0) return;
                 const angleText = plotMapping[plot] ? ` (${plotMapping[plot]})` : '';
-                items.push({ label: '─────', value: `조사구 ${plot}${angleText}`, isSeparator: true });
-              }
-
-              groupedByPlot[plot].forEach(r => {
-                const name = r['수종명'] || r['식물명'] || '알수없음';
-                const count = r['출현수'] !== undefined ? `출현수: ${r['출현수']}` : '';
-                const dominance = r['우점도'] !== undefined ? r['우점도'] : r['우점도코드'];
-                const dominanceText = dominance !== undefined ? `우점도: ${dominance}` : '';
-
-                const detail = [count, dominanceText].filter(Boolean).join(' | ');
-                items.push({ label: name, value: detail || '-' });
+                items.push({
+                  label: plot === '' ? '수종명' : `조사구 ${plot}${angleText}`,
+                  value: speciesList.join(', ') || '-'
+                });
               });
-            });
+            } else {
+              // 산림식생조사표는 기존처럼 상세 정보(출현수, 우점도)를 개별 행으로 표시
+              sortedPlots.forEach(plot => {
+                if (plot !== '') {
+                  const angleText = plotMapping[plot] ? ` (${plotMapping[plot]})` : '';
+                  items.push({ label: '─────', value: `조사구 ${plot}${angleText}`, isSeparator: true });
+                }
+
+                groupedByPlot[plot].forEach(r => {
+                  const name = r['수종명'] || r['식물명'] || '알수없음';
+                  const count = r['출현수'] !== undefined ? `출현수: ${r['출현수']}` : '';
+                  const dominance = r['우점도'] !== undefined ? r['우점도'] : r['우점도코드'];
+                  const dominanceText = dominance !== undefined ? `우점도: ${dominance}` : '';
+
+                  const detail = [count, dominanceText].filter(Boolean).join(' | ');
+                  items.push({ label: name, value: detail || '-' });
+                });
+              });
+            }
             pointData[tab.id] = items;
           }
           else {
@@ -977,16 +991,16 @@ function App() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className={`data-row ${['임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) ? 'multiline-row' : ''}`}>
+                                      <div className={`data-row ${['임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) || activeTab === 'herb' ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
-                                          style={['vegetation', 'herb'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
+                                          style={activeTab === 'vegetation' ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
                                         >
                                           {row.label}
                                         </span>
                                         <span
                                           className="value"
-                                          style={['vegetation', 'herb'].includes(activeTab) ? { fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 'normal' } : {}}
+                                          style={activeTab === 'vegetation' ? { fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 'normal' } : {}}
                                         >
                                           {row.value}
                                         </span>
