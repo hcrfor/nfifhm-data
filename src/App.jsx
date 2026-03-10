@@ -401,11 +401,48 @@ function App() {
             });
             pointData[tab.id] = soilItems;
           }
-          else if (['sapling', 'vegetation', 'herb'].includes(tab.id)) {
+          else if (tab.id === 'sapling') {
             const speciesList = [...new Set(rows.map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
             pointData[tab.id] = speciesList.length > 0
               ? speciesList.map((s, idx) => ({ label: `종류 ${idx + 1}`, value: s }))
               : [];
+          }
+          else if (['vegetation', 'herb'].includes(tab.id)) {
+            // 산림식생조사표 및 초본종은 조사구별(1: 0도, 2: 120도, 3: 240도)로 그룹화하여 표시
+            const plotMapping = { '1': '0도', '2': '120도', '3': '240도' };
+            const groupedByPlot = {};
+
+            rows.forEach(r => {
+              const plotName = String(r['조사구명'] || '').trim();
+              if (!groupedByPlot[plotName]) groupedByPlot[plotName] = [];
+              groupedByPlot[plotName].push(r);
+            });
+
+            const items = [];
+            const sortedPlots = Object.keys(groupedByPlot).sort((a, b) => {
+              const numA = parseInt(a);
+              const numB = parseInt(b);
+              if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+              return a.localeCompare(b);
+            });
+
+            sortedPlots.forEach(plot => {
+              if (plot !== '') {
+                const angleText = plotMapping[plot] ? ` (${plotMapping[plot]})` : '';
+                items.push({ label: '─────', value: `조사구 ${plot}${angleText}`, isSeparator: true });
+              }
+
+              groupedByPlot[plot].forEach(r => {
+                const name = r['수종명'] || r['식물명'] || '알수없음';
+                const count = r['출현수'] !== undefined ? `출현수: ${r['출현수']}` : '';
+                const dominance = r['우점도'] !== undefined ? r['우점도'] : r['우점도코드'];
+                const dominanceText = dominance !== undefined ? `우점도: ${dominance}` : '';
+
+                const detail = [count, dominanceText].filter(Boolean).join(' | ');
+                items.push({ label: name, value: detail || '-' });
+              });
+            });
+            pointData[tab.id] = items;
           }
           else {
             if (rows.length > 0) {
