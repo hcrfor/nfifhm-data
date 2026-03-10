@@ -454,20 +454,22 @@ function App() {
 
                 groupedByPlot[plot].forEach(r => {
                   const name = r['수종명'] || r['식물명'] || '알수없음';
-                  let detail = '';
 
                   if (tab.id === 'sapling') {
                     const dia = r['근원경'] || '-';
                     const count = r['본수'] || '-';
-                    detail = `근원경: ${dia} | 본수: ${count}`;
+                    // 수종명과 상세 정보를 한 줄로 합쳐서 표시
+                    items.push({
+                      label: name,
+                      value: `근원경: ${dia} | 본수: ${count}`
+                    });
                   } else {
                     const count = r['출현수'] !== undefined ? `출현수: ${r['출현수']}` : '';
                     const dominance = r['우점도'] !== undefined ? r['우점도'] : r['우점도코드'];
                     const dominanceText = dominance !== undefined ? `우점도: ${dominance}` : '';
-                    detail = [count, dominanceText].filter(Boolean).join(' | ');
+                    const detail = [count, dominanceText].filter(Boolean).join(' | ');
+                    items.push({ label: name, value: detail || '-' });
                   }
-
-                  items.push({ label: name, value: detail || '-' });
                 });
               });
             }
