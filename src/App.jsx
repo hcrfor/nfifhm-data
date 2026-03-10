@@ -978,8 +978,18 @@ function App() {
                                       </div>
                                     ) : (
                                       <div className={`data-row ${['임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) ? 'multiline-row' : ''}`}>
-                                        <span className="label">{row.label}</span>
-                                        <span className="value">{row.value}</span>
+                                        <span
+                                          className="label"
+                                          style={['vegetation', 'herb'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
+                                        >
+                                          {row.label}
+                                        </span>
+                                        <span
+                                          className="value"
+                                          style={['vegetation', 'herb'].includes(activeTab) ? { fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 'normal' } : {}}
+                                        >
+                                          {row.value}
+                                        </span>
                                         <button
                                           className="copy-btn"
                                           onClick={() => copyToClipboard(row.value)}
