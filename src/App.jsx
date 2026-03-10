@@ -935,7 +935,7 @@ function App() {
                                       )}
                                       {standItems.length > 0 && (
                                         <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(33, 150, 243, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>임분상태</span>
+                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>임분현황</span>
                                           <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto', gap: '0.5rem' }}>
                                             {standItems.map((item, sIdx) => (
                                               <div key={sIdx} className="group-item" style={{ minWidth: 'max-content', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
@@ -995,7 +995,7 @@ function App() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) || activeTab === 'herb' ? 'multiline-row' : ''}`}>
+                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적'].includes(row.label) || activeTab === 'herb' ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
                                           style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
