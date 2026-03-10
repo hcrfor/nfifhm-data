@@ -920,6 +920,19 @@ function App() {
                                           </div>
                                         </div>
                                       )}
+                                      {soilItems.length > 0 && (
+                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 152, 0, 0.03)', borderTop: 'none' }}>
+                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>토양상태</span>
+                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                            {soilItems.map((item, soilIdx) => (
+                                              <div key={soilIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
                                       {forestItems.length > 0 && (
                                         <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(139, 195, 74, 0.03)', borderTop: 'none' }}>
                                           <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림정보</span>
@@ -959,19 +972,7 @@ function App() {
                                           </div>
                                         </div>
                                       )}
-                                      {soilItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 152, 0, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>토양상태</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {soilItems.map((item, soilIdx) => (
-                                              <div key={soilIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
+
                                     </>
                                   )}
 
