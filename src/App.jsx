@@ -422,19 +422,19 @@ function App() {
               return a.localeCompare(b);
             });
 
-            if (tab.id === 'herb') {
-              // 초본종은 수종명 데이터를 조사구별로 한 줄로 모아서 가독성 있게 표시
+            if (tab.id === 'herb' || tab.id === 'sapling') {
+              // 초본종 및 치수조사표는 수종명 데이터를 조사구별로 한 줄로 모아서 가독성 있게 표시
               sortedPlots.forEach(plot => {
                 const speciesList = [...new Set(groupedByPlot[plot].map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
                 if (speciesList.length === 0) return;
                 const angleText = plotMapping[plot] ? ` (${plotMapping[plot]})` : '';
                 items.push({
-                  label: plot === '' ? '수종명' : `조사구 ${plot}${angleText}`,
+                  label: tab.id === 'sapling' ? `출현종${angleText}` : (plot === '' ? '수종명' : `조사구 ${plot}${angleText}`),
                   value: speciesList.join(', ') || '-'
                 });
               });
             } else {
-              // 산림식생조사표 및 치수조사표는 상세 정보(근원경, 본수/출현수, 우점도)를 개별 행으로 표시
+              // 산림식생조사표는 상세 정보(출현수, 우점도)를 개별 행으로 표시
               sortedPlots.forEach(plot => {
                 if (plot !== '') {
                   const angleText = plotMapping[plot] ? ` (${plotMapping[plot]})` : '';
@@ -443,18 +443,10 @@ function App() {
 
                 groupedByPlot[plot].forEach(r => {
                   const name = r['수종명'] || r['식물명'] || '알수없음';
-                  let detail = '';
-
-                  if (tab.id === 'sapling') {
-                    const dia = r['근원경'] || '-';
-                    const count = r['본수'] || '-';
-                    detail = `근원경: ${dia} | 본수: ${count}`;
-                  } else {
-                    const count = r['출현수'] !== undefined ? `출현수: ${r['출현수']}` : '';
-                    const dominance = r['우점도'] !== undefined ? r['우점도'] : r['우점도코드'];
-                    const dominanceText = dominance !== undefined ? `우점도: ${dominance}` : '';
-                    detail = [count, dominanceText].filter(Boolean).join(' | ');
-                  }
+                  const count = r['출현수'] !== undefined ? `출현수: ${r['출현수']}` : '';
+                  const dominance = r['우점도'] !== undefined ? r['우점도'] : r['우점도코드'];
+                  const dominanceText = dominance !== undefined ? `우점도: ${dominance}` : '';
+                  const detail = [count, dominanceText].filter(Boolean).join(' | ');
 
                   items.push({ label: name, value: detail || '-' });
                 });
@@ -997,7 +989,7 @@ function App() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적', '출현종'].includes(row.label) || activeTab === 'herb' ? 'multiline-row' : ''}`}>
+                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적', '출현종'].includes(row.label) || row.label.includes('출현종') || ['herb', 'sapling'].includes(activeTab) ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
                                           style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
