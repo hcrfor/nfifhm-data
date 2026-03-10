@@ -204,7 +204,9 @@ function App() {
               maxHeightInfo = `${uniqueMaxSpecies.join(', ')}[${maxH}]`;
             }
 
+            const speciesList = [...new Set(rows.map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
             const summaryItems = [
+              { label: '출현종', value: speciesList.join(', ') || '-' },
               { label: '본수', value: count },
               { label: '최대수고', value: maxHeightInfo },
               { label: '평균수고', value: avgHeight }
@@ -995,7 +997,7 @@ function App() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적'].includes(row.label) || activeTab === 'herb' ? 'multiline-row' : ''}`}>
+                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적', '출현종'].includes(row.label) || activeTab === 'herb' ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
                                           style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
