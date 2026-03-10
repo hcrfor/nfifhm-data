@@ -993,7 +993,7 @@ function App() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className={`data-row ${['임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) || activeTab === 'herb' || activeTab === 'sapling' ? 'multiline-row' : ''}`}>
+                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) || activeTab === 'herb' || activeTab === 'sapling' ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
                                           style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
