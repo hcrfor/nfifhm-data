@@ -595,6 +595,7 @@ function App() {
           <div style={{ position: 'relative', flex: 1 }}>
             <input
               type="text"
+              inputMode="numeric"
               className="search-input"
               placeholder="집락번호 6자리를 입력하세요"
               style={{ width: '100%' }}
