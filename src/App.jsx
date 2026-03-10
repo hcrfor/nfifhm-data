@@ -947,11 +947,11 @@ function App() {
                                       {standItems.length > 0 && (
                                         <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(33, 150, 243, 0.03)', borderTop: 'none' }}>
                                           <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>임분상태</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto', gap: '0.5rem' }}>
                                             {standItems.map((item, sIdx) => (
-                                              <div key={sIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                              <div key={sIdx} className="group-item" style={{ minWidth: 'max-content', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
                                                 <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500', whiteSpace: 'nowrap' }}>{item.value || '-'}</span>
                                               </div>
                                             ))}
                                           </div>
