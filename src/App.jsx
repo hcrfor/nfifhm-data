@@ -1010,7 +1010,7 @@ function App() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적', '출현종'].includes(row.label) || row.label.includes('출현종') || ['herb', 'sapling'].includes(activeTab) ? 'multiline-row' : ''}`}>
+                                      <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적', '출현종'].includes(row.label) || row.label.includes('출현종') || activeTab === 'herb' ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
                                           style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
