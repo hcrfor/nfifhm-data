@@ -402,10 +402,12 @@ function App() {
             pointData[tab.id] = soilItems;
           }
           else if (tab.id === 'sapling') {
-            const speciesList = [...new Set(rows.map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
-            pointData[tab.id] = speciesList.length > 0
-              ? speciesList.map((s, idx) => ({ label: `종류 ${idx + 1}`, value: s }))
-              : [];
+            pointData[tab.id] = rows.map(r => {
+              const name = r['수종명'] || r['식물명'] || '알수없음';
+              const dia = r['근원경'] || '-';
+              const count = r['본수'] || '-';
+              return { label: name, value: `근원경: ${dia} | 본수: ${count}` };
+            });
           }
           else if (['vegetation', 'herb'].includes(tab.id)) {
             // 산림식생조사표 및 초본종은 조사구별(1: 0도, 2: 120도, 3: 240도)로 그룹화하여 표시
@@ -991,16 +993,16 @@ function App() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className={`data-row ${['임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) || activeTab === 'herb' ? 'multiline-row' : ''}`}>
+                                      <div className={`data-row ${['임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보'].includes(row.label) || activeTab === 'herb' || activeTab === 'sapling' ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
-                                          style={activeTab === 'vegetation' ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
+                                          style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
                                         >
                                           {row.label}
                                         </span>
                                         <span
                                           className="value"
-                                          style={activeTab === 'vegetation' ? { fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 'normal' } : {}}
+                                          style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 'normal' } : {}}
                                         >
                                           {row.value}
                                         </span>
