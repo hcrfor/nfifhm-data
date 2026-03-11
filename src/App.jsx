@@ -204,7 +204,9 @@ function App() {
               maxHeightInfo = `${uniqueMaxSpecies.join(', ')}[${maxH}]`;
             }
 
-            const speciesList = [...new Set(rows.map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
+            const speciesList = [...new Set(rows.map(r => r['수종명'] || r['식물명'] || '알수없음'))]
+              .filter(s => s && s !== '알수없음')
+              .sort((a, b) => a.localeCompare(b, 'ko'));
             const summaryItems = [
               { label: '출현종', value: speciesList.join(', ') || '-' },
               { label: '본수', value: count },
@@ -425,7 +427,9 @@ function App() {
             if (tab.id === 'herb') {
               // 초본종은 수종명 데이터를 조사구별로 한 줄로 모아서 가독성 있게 표시
               sortedPlots.forEach(plot => {
-                const speciesList = [...new Set(groupedByPlot[plot].map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
+                const speciesList = [...new Set(groupedByPlot[plot].map(r => r['수종명'] || r['식물명'] || '알수없음'))]
+                  .filter(s => s && s !== '알수없음')
+                  .sort((a, b) => a.localeCompare(b, 'ko'));
                 if (speciesList.length === 0) return;
                 const angleText = plotMapping[plot] ? ` (${plotMapping[plot]})` : '';
                 items.push({
@@ -443,7 +447,9 @@ function App() {
 
                 // 치수조사표일 경우 해당 조사구의 수종 요약(출현종)을 상단에 추가
                 if (tab.id === 'sapling') {
-                  const speciesList = [...new Set(groupedByPlot[plot].map(r => r['수종명'] || r['식물명'] || '알수없음'))].filter(s => s && s !== '알수없음');
+                  const speciesList = [...new Set(groupedByPlot[plot].map(r => r['수종명'] || r['식물명'] || '알수없음'))]
+                    .filter(s => s && s !== '알수없음')
+                    .sort((a, b) => a.localeCompare(b, 'ko'));
                   if (speciesList.length > 0) {
                     items.push({
                       label: '출현종',
