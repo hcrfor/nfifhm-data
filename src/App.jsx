@@ -21,6 +21,7 @@ function App() {
   const [searchResult, setSearchResult] = useState(null);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [checkedItems, setCheckedItems] = useState({});
 
   // 토스트 메시지 표시
   const showToast = (message) => {
@@ -1043,13 +1044,31 @@ function App() {
                                         >
                                           {row.value}
                                         </span>
-                                        <button
-                                          className="copy-btn"
-                                          onClick={() => copyToClipboard(row.value)}
-                                          title="복사"
-                                        >
-                                          <Copy size={16} />
-                                        </button>
+                                        {activeTab === 'tree' && row.label.startsWith('개체목(') ? (
+                                          <button
+                                            className="copy-btn"
+                                            onClick={() => {
+                                              const id = `${point.pointId}-${row.label}-${row.value}`;
+                                              setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+                                            }}
+                                            title="체크"
+                                            style={{ color: checkedItems[`${point.pointId}-${row.label}-${row.value}`] ? '#4caf50' : 'inherit' }}
+                                          >
+                                            {checkedItems[`${point.pointId}-${row.label}-${row.value}`] ? (
+                                              <span style={{ fontWeight: 'bold' }}>V</span>
+                                            ) : (
+                                              <Check size={16} />
+                                            )}
+                                          </button>
+                                        ) : (
+                                          <button
+                                            className="copy-btn"
+                                            onClick={() => copyToClipboard(row.value)}
+                                            title="복사"
+                                          >
+                                            <Copy size={16} />
+                                          </button>
+                                        )}
                                       </div>
                                     )
                                   )}
