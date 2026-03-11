@@ -1034,13 +1034,19 @@ function App() {
                                       <div className={`data-row ${['주소', '임분현황', '표본점이동경로', '비고', '특이사항', '표본점현지정보', '야생동물서식흔적', '출현종'].includes(row.label) || row.label.includes('출현종') || activeTab === 'herb' ? 'multiline-row' : ''}`}>
                                         <span
                                           className="label"
-                                          style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}}
+                                          style={{
+                                            ...(['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '500' } : {}),
+                                            ...(activeTab === 'tree' && row.label.startsWith('개체목(') && checkedItems[`${point.pointId}-${row.label}-${row.value}`] ? { color: '#4caf50' } : {})
+                                          }}
                                         >
                                           {row.label}
                                         </span>
                                         <span
                                           className="value"
-                                          style={['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 'normal' } : {}}
+                                          style={{
+                                            ...(['vegetation', 'sapling'].includes(activeTab) ? { fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 'normal' } : {}),
+                                            ...(activeTab === 'tree' && row.label.startsWith('개체목(') && checkedItems[`${point.pointId}-${row.label}-${row.value}`] ? { color: '#4caf50' } : {})
+                                          }}
                                         >
                                           {row.value}
                                         </span>
