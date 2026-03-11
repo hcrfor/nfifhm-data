@@ -226,6 +226,7 @@ function App() {
 
                 detailedTrees.push({
                   code,
+                  name,
                   label: `개체목(${code})`,
                   value: `${name} | 흉고:${dbh} | 거리:${dist}m | 방위:${azi}º`
                 });
@@ -239,7 +240,9 @@ function App() {
               const idxB = sortOrder.indexOf(b.code);
               const orderA = idxA === -1 ? 999 : idxA;
               const orderB = idxB === -1 ? 999 : idxB;
-              return orderA - orderB;
+              
+              if (orderA !== orderB) return orderA - orderB;
+              return a.name.localeCompare(b.name, 'ko');
             });
 
             // 결과 합치기 (중간에 구분자 역할을 할 가상 항목 추가)
@@ -458,7 +461,14 @@ function App() {
                   }
                 }
 
-                groupedByPlot[plot].forEach(r => {
+                // 해당 조사구의 행들을 수종명 가나다 순으로 정렬
+                const sortedRows = [...groupedByPlot[plot]].sort((a, b) => {
+                  const nameA = a['수종명'] || a['식물명'] || '알수없음';
+                  const nameB = b['수종명'] || b['식물명'] || '알수없음';
+                  return nameA.localeCompare(nameB, 'ko');
+                });
+
+                sortedRows.forEach(r => {
                   const name = r['수종명'] || r['식물명'] || '알수없음';
 
                   if (tab.id === 'sapling') {
