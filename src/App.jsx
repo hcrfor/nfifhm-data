@@ -448,8 +448,8 @@ function App() {
                   items.push({ label: '─────', value: `조사구 ${plot}${angleText}`, isSeparator: true });
                 }
 
-                // 치수조사표일 경우 해당 조사구의 수종 요약(출현종)을 상단에 추가
-                if (tab.id === 'sapling') {
+                // 치수조사표 또는 산림식생조사표일 경우 해당 조사구의 수종 요약(출현종)을 상단에 추가
+                if (tab.id === 'sapling' || tab.id === 'vegetation') {
                   const speciesList = [...new Set(groupedByPlot[plot].map(r => r['수종명'] || r['식물명'] || '알수없음'))]
                     .filter(s => s && s !== '알수없음')
                     .sort((a, b) => a.localeCompare(b, 'ko'));
