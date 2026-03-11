@@ -223,18 +223,21 @@ function App() {
                 const dbh = r['흉고직경'] || r['휼고직경'] || '-';
                 const dist = r['거리(m)'] || r['거리'] || '-';
                 const azi = r['방위각(º)'] || r['방위각'] || '-';
+                // 방위각 정렬을 위해 숫자형으로 변환 (숫자가 아니면 뒤로 보냄)
+                const aziNum = isNaN(Number(azi)) ? 999 : Number(azi);
 
                 detailedTrees.push({
                   code,
                   name,
+                  azi: aziNum,
                   label: `개체목(${code})`,
                   value: `${name} | 흉고:${dbh} | 거리:${dist}m | 방위:${azi}º`
                 });
               }
             });
 
-            // 사용자 지정 순서: TS, S, T, LS, TLS
-            const sortOrder = ['TS', 'S', 'T', 'LS', 'TLS'];
+            // 사용자 지정 순서: S, TS, LS, TLS, T
+            const sortOrder = ['S', 'TS', 'LS', 'TLS', 'T'];
             detailedTrees.sort((a, b) => {
               const idxA = sortOrder.indexOf(a.code);
               const idxB = sortOrder.indexOf(b.code);
@@ -242,7 +245,8 @@ function App() {
               const orderB = idxB === -1 ? 999 : idxB;
               
               if (orderA !== orderB) return orderA - orderB;
-              return a.name.localeCompare(b.name, 'ko');
+              // 방위각 오름차순 정렬
+              return a.azi - b.azi;
             });
 
             // 결과 합치기 (중간에 구분자 역할을 할 가상 항목 추가)
