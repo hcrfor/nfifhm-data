@@ -40,19 +40,24 @@ function App() {
     }
   };
 
-  // IndexedDB 핵심 로직
+  // IndexedDB 핵심 로직 (데이터 버전 관리)
   const DB_NAME = 'ForestryDB';
   const STORE_NAME = 'ExcelStore';
+  const CURRENT_DB_VERSION = 'v2024_03_12_v2'; // 8자리 집락번호 대응 버전
+  const STORAGE_KEY = 'lastFile_' + CURRENT_DB_VERSION;
 
   const saveToIDB = (fileName, buffer) => {
     const request = indexedDB.open(DB_NAME, 1);
     request.onupgradeneeded = (e) => {
-      e.target.result.createObjectStore(STORE_NAME);
+      if (!e.target.result.objectStoreNames.contains(STORE_NAME)) {
+        e.target.result.createObjectStore(STORE_NAME);
+      }
     };
     request.onsuccess = (e) => {
       const db = e.target.result;
       const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).put({ fileName, buffer }, 'lastFile');
+      // 새로운 버전 키로 저장
+      tx.objectStore(STORE_NAME).put({ fileName, buffer, version: CURRENT_DB_VERSION }, STORAGE_KEY);
     };
   };
 
@@ -81,13 +86,14 @@ function App() {
       const db = e.target.result;
       const tx = db.transaction(STORE_NAME, 'readonly');
       const store = tx.objectStore(STORE_NAME);
-      const getReq = store.get('lastFile');
+      const getReq = store.get(STORAGE_KEY); // 최신 버전 키로 조회
 
       getReq.onsuccess = () => {
-        if (getReq.result) {
+        if (getReq.result && getReq.result.version === CURRENT_DB_VERSION) {
           processBuffer(getReq.result.buffer, getReq.result.fileName, true);
         } else {
-          // IDB에 데이터가 없으면 기본 파일 로드
+          // 저장된 데이터가 없거나 버전이 다르면 기본 파일(8자리 버전) 로드
+          console.log('구버전 데이터 감지 또는 데이터 없음. 최신 파일을 서버에서 가져옵니다.');
           loadDefaultFile();
         }
       };
