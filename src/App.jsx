@@ -114,7 +114,8 @@ function App() {
         const newDb = {};
         wb.SheetNames.forEach(sheetName => {
           const worksheet = wb.Sheets[sheetName];
-          const rawJson = XLSX.utils.sheet_to_json(worksheet);
+          // raw: false를 사용하여 엑셀에 보이는 텍스트 그대로(앞자리 0 보존 등) 읽어옴
+          const rawJson = XLSX.utils.sheet_to_json(worksheet, { raw: false });
           const normalizedJson = rawJson.map(row => {
             const newRow = {};
             Object.keys(row).forEach(k => {
@@ -165,6 +166,9 @@ function App() {
       return;
     }
 
+    // 비교를 위해 하이픈을 제거한 버전도 준비
+    const searchIdNoHyphen = cleanId.replace(/-/g, '');
+
     const result = {
       points: [1, 2, 3, 4].map(pointId => {
         const pointData = {};
@@ -173,10 +177,15 @@ function App() {
           const sheetData = db[tab.sheet] || [];
 
           let rows = sheetData.filter(row => {
-            const rowClusterId = String(row['집락번호'] || '').trim();
-            const rowPointId = String(row['표본점번호'] || '').trim();
+            const rawRowClusterId = String(row['집락번호'] || '').trim();
+            const rowClusterIdNoHyphen = rawRowClusterId.replace(/-/g, '');
 
-            const isClusterMatch = rowClusterId === cleanId;
+            // 1. 완전 일치 또는 2. 하이픈을 제외한 숫자가 일치하는지 확인
+            const isClusterMatch = 
+              rawRowClusterId === cleanId || 
+              rowClusterIdNoHyphen === searchIdNoHyphen;
+
+            const rowPointId = String(row['표본점번호'] || '').trim();
 
             // 토양조사표 등 일부 시트는 표본점번호가 '1.0' 처럼 소수점으로 저장될 수 있음
             const cleanRowPointId = rowPointId.split('.')[0];
@@ -686,7 +695,7 @@ function App() {
               type="text"
               inputMode="tel"
               className="search-input"
-              placeholder="집락번호 6자리를 입력하세요"
+              placeholder="집락번호(8자리 등)를 입력하세요"
               style={{ width: '100%' }}
               value={clusterId}
               onChange={(e) => setClusterId(e.target.value)}
