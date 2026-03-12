@@ -237,8 +237,8 @@ function App() {
               }
             });
 
-            // 사용자 지정 순서: S, TS, LS, TLS, T
-            const sortOrder = ['S', 'TS', 'LS', 'TLS', 'T'];
+            // 사용자 지정 순서: S, TS, LS, TLS, T, TL, L
+            const sortOrder = ['S', 'TS', 'LS', 'TLS', 'T', 'TL', 'L'];
             detailedTrees.sort((a, b) => {
               const idxA = sortOrder.indexOf(a.code);
               const idxB = sortOrder.indexOf(b.code);
