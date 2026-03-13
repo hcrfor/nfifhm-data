@@ -806,6 +806,9 @@ function App() {
                           const coreKeys = ['조사연도', '산림여부', '조사가능여부'];
                           const coreItems = allRows.filter(item => coreKeys.includes(item.label));
 
+                          // 1번 표본점 데이터 (공용 데이터 참조용)
+                          const p1Data = point.pointId !== 1 ? (searchResult.points.find(p => p.pointId === 1)?.data[activeTab] || []) : [];
+
                           // 조사자 그룹
                           const surveyorKeys = ['조사자1', '조사자2', '조사자3', '조사자4'];
                           const surveyorItems = allRows.filter(item => surveyorKeys.includes(item.label));
@@ -847,21 +850,34 @@ function App() {
                           const forestKeys = ['임상', '수관밀도'];
                           const forestItems = allRows.filter(item => forestKeys.includes(item.label));
 
-                          // 산림교란 그룹 (산불, 병해충)
+                          // 산림교란 그룹 (공유 데이터 지원)
                           const distKeys = ['산림교란(산불)', '산림교란(병해충)'];
-                          const distItems = allRows.filter(item => distKeys.includes(item.label));
+                          let distItems = allRows.filter(item => distKeys.includes(item.label));
+                          if (point.pointId !== 1 && distItems.length === 0) distItems = p1Data.filter(item => distKeys.includes(item.label));
 
-                          // 산림교란(기타) 그룹 (기상, 인위적)
                           const dist2Keys = ['산림교란(기상)', '산림교란(인위적)'];
-                          const dist2Items = allRows.filter(item => dist2Keys.includes(item.label));
+                          let dist2Items = allRows.filter(item => dist2Keys.includes(item.label));
+                          if (point.pointId !== 1 && dist2Items.length === 0) dist2Items = p1Data.filter(item => dist2Keys.includes(item.label));
 
-                          // 산림교란(기타2) 그룹 (덩굴, 기타)
                           const dist3Keys = ['산림교란(덩굴)', '산림교란(기타)'];
-                          const dist3Items = allRows.filter(item => dist3Keys.includes(item.label));
+                          let dist3Items = allRows.filter(item => dist3Keys.includes(item.label));
+                          if (point.pointId !== 1 && dist3Items.length === 0) dist3Items = p1Data.filter(item => dist3Keys.includes(item.label));
 
-                          // 비산림면적 그룹 (기본, 대경목)
+                          // 비산림면적 그룹 (공유 데이터 지원)
                           const nonForestKeys = ['기본조사원 비산림면적', '대경목조사원 비산림면적'];
-                          const nonForestItems = allRows.filter(item => nonForestKeys.includes(item.label));
+                          let nonForestItems = allRows.filter(item => nonForestKeys.includes(item.label));
+                          if (point.pointId !== 1 && nonForestItems.length === 0) nonForestItems = p1Data.filter(item => nonForestKeys.includes(item.label));
+
+                          // 공유 텍스트 데이터 추출 (야생동물, 특이사항 등)
+                          const getSharedVal = (key) => {
+                            const current = allRows.find(i => i.label === key);
+                            if (current && current.value && current.value !== '-') return current.value;
+                            return p1Data.find(i => i.label === key)?.value || '-';
+                          };
+
+                          const habitatVal = getSharedVal('야생동물서식흔적');
+                          const remarkVal = getSharedVal('특이사항');
+                          const fieldInfoVal = getSharedVal('표본점현지정보');
 
                           // 좌표 그룹 (좌표N, 좌표E)
                           const coordKeys = ['좌표N', '좌표E'];
@@ -974,106 +990,7 @@ function App() {
                               {/* 나머지 정보 (기존 방식) */}
                               {otherItems.map((row, idx) => (
                                 <React.Fragment key={idx}>
-                                  {/* 경사 바로 위에 위치/접근성, 지형정보 표시 */}
-                                  {row.label === '경사' && (
-                                    <>
-                                      {locItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(156, 39, 176, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>위치/접근성</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {locItems.map((item, lIdx) => (
-                                              <div key={lIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {topoItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(233, 30, 99, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>지형정보</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {topoItems.map((item, tIdx) => (
-                                              <div key={tIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {jiHwangItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(0, 150, 136, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>지황정보</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {jiHwangItems.map((item, jIdx) => (
-                                              <div key={jIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {soilItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 152, 0, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>토양상태</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {soilItems.map((item, soilIdx) => (
-                                              <div key={soilIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {standItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(33, 150, 243, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>임분현황</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto', gap: '0.5rem' }}>
-                                            {standItems.map((item, sIdx) => (
-                                              <div key={sIdx} className="group-item" style={{ minWidth: 'max-content', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500', whiteSpace: 'nowrap' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {forestItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(139, 195, 74, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림정보</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {forestItems.map((item, fIdx) => (
-                                              <div key={fIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {canopyItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(76, 175, 80, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>수관밀도현황</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {canopyItems.map((item, cIdx) => (
-                                              <div key={cIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem' }}>{item.value}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-
-
-                                    </>
-                                  )}
-
-                                  {!topoKeys.includes(row.label) && !jiHwangKeys.includes(row.label) && !forestKeys.includes(row.label) && !distKeys.includes(row.label) && !dist2Keys.includes(row.label) && !dist3Keys.includes(row.label) && !nonForestKeys.includes(row.label) && !coordKeys.includes(row.label) && !landTypeKeys.includes(row.label) && !workKeys.includes(row.label) && (
+                                  {!topoKeys.includes(row.label) && !jiHwangKeys.includes(row.label) && !forestKeys.includes(row.label) && !distKeys.includes(row.label) && !dist2Keys.includes(row.label) && !dist3Keys.includes(row.label) && !nonForestKeys.includes(row.label) && !coordKeys.includes(row.label) && !landTypeKeys.includes(row.label) && !workKeys.includes(row.label) && !['야생동물서식흔적', '특이사항', '표본점현지정보'].includes(row.label) && (
                                     row.isSeparator ? (
                                       <div className="data-row separator-row">
                                         <span className="separator-text">{row.value}</span>
@@ -1138,69 +1055,186 @@ function App() {
                                       </div>
                                     )
                                   )}
-
-
-                                  {/* 표본점현지정보 바로 밑에 비산림면적 표시 */}
-                                  {row.label === '표본점현지정보' && nonForestItems.length > 0 && (
-                                    <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(0, 188, 212, 0.03)', borderTop: 'none' }}>
-                                      <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>비산림면적</span>
-                                      <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                        {nonForestItems.map((item, nIdx) => (
-                                          <div key={nIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                            <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                            <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* 특이사항 바로 밑에 산림교란 표시 */}
-                                  {row.label === '특이사항' && (
-                                    <>
-                                      {distItems.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 87, 34, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림교란</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {distItems.map((item, dIdx) => (
-                                              <div key={dIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {dist2Items.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 152, 0, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림교란(2)</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {dist2Items.map((item, d2Idx) => (
-                                              <div key={d2Idx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {dist3Items.length > 0 && (
-                                        <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 193, 7, 0.03)', borderTop: 'none' }}>
-                                          <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림교란(3)</span>
-                                          <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                            {dist3Items.map((item, d3Idx) => (
-                                              <div key={d3Idx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                                <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                                <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
                                 </React.Fragment>
                               ))}
+
+                              {/* 상세 정보 그룹 (임분조사표 등에서 항상 표시되도록 루프 밖 배치) */}
+                              <div style={{ marginTop: '1rem' }}>
+                                {locItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(156, 39, 176, 0.03)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>위치/접근성</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                      {locItems.map((item, lIdx) => (
+                                        <div key={lIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {topoItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(233, 30, 99, 0.03)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>지형정보</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                      {topoItems.map((item, tIdx) => (
+                                        <div key={tIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {jiHwangItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(0, 150, 136, 0.03)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>지황정보</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                      {jiHwangItems.map((item, jIdx) => (
+                                        <div key={jIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {soilItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 152, 0, 0.03)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>토양상태</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                      {soilItems.map((item, soilIdx) => (
+                                        <div key={soilIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {standItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(33, 150, 243, 0.03)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>임분현황</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto', gap: '0.5rem' }}>
+                                      {standItems.map((item, sIdx) => (
+                                        <div key={sIdx} className="group-item" style={{ minWidth: 'max-content', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500', whiteSpace: 'nowrap' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {forestItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(139, 195, 74, 0.03)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림정보</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                      {forestItems.map((item, fIdx) => (
+                                        <div key={fIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {canopyItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(76, 175, 80, 0.03)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>수관밀도현황</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                      {canopyItems.map((item, cIdx) => (
+                                        <div key={cIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* 표본점현지정보 & 비산림면적 */}
+                                {(fieldInfoVal !== '-' || nonForestItems.length > 0) && (
+                                  <>
+                                    <div className="data-row multiline-row">
+                                      <span className="label">표본점현지정보</span>
+                                      <span className="value">{fieldInfoVal}</span>
+                                      <button className="copy-btn" onClick={() => copyToClipboard(fieldInfoVal)} title="복사"><Copy size={16} /></button>
+                                    </div>
+                                    {nonForestItems.length > 0 && (
+                                      <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(0, 188, 212, 0.03)', borderTop: 'none' }}>
+                                        <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>비산림면적</span>
+                                        <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                          {nonForestItems.map((item, nIdx) => (
+                                            <div key={nIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                              <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                              <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+
+                                {/* 야생동물서식흔적 */}
+                                {habitatVal !== '-' && (
+                                  <div className="data-row multiline-row">
+                                    <span className="label">야생동물서식흔적</span>
+                                    <span className="value">{habitatVal}</span>
+                                    <button className="copy-btn" onClick={() => copyToClipboard(habitatVal)} title="복사"><Copy size={16} /></button>
+                                  </div>
+                                )}
+
+                                {/* 특이사항 & 산림교란 */}
+                                {(remarkVal !== '-' || distItems.length > 0) && (
+                                  <>
+                                    <div className="data-row multiline-row">
+                                      <span className="label">특이사항</span>
+                                      <span className="value">{remarkVal}</span>
+                                      <button className="copy-btn" onClick={() => copyToClipboard(remarkVal)} title="복사"><Copy size={16} /></button>
+                                    </div>
+                                    {distItems.length > 0 && (
+                                      <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 87, 34, 0.03)', borderTop: 'none' }}>
+                                        <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림교란</span>
+                                        <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                          {distItems.map((item, dIdx) => (
+                                            <div key={dIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                              <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                              <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {dist2Items.length > 0 && (
+                                      <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 152, 0, 0.03)', borderTop: 'none' }}>
+                                        <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림교란(2)</span>
+                                        <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                          {dist2Items.map((item, d2Idx) => (
+                                            <div key={d2Idx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                              <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                              <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {dist3Items.length > 0 && (
+                                      <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(255, 193, 7, 0.03)', borderTop: 'none' }}>
+                                        <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>산림교란(3)</span>
+                                        <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                          {dist3Items.map((item, d3Idx) => (
+                                            <div key={d3Idx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                              <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                              <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </div>
                             </>
                           );
                         })()
