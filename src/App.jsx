@@ -926,6 +926,51 @@ function App() {
                                 </div>
                               )}
 
+                              {/* 좌표 표시 (모든 표본점) */}
+                              {coordItems.length > 0 && (
+                                <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(156, 39, 176, 0.03)', borderTop: 'none' }}>
+                                  <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>좌표</span>
+                                  <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                    {coordItems.map((item, cIdx) => (
+                                      <div key={cIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                        <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                        <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 토지이용/표본점종류 표시 (모든 표본점) */}
+                              {landTypeItems.length > 0 && (
+                                <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(76, 175, 80, 0.03)', borderTop: 'none' }}>
+                                  <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>토지이용/표본점정보</span>
+                                  <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                    {landTypeItems.map((item, ltIdx) => (
+                                      <div key={ltIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                        <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                        <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 시업정보 표시 (모든 표본점) */}
+                              {workItems.length > 0 && (
+                                <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(63, 81, 181, 0.03)', borderTop: 'none' }}>
+                                  <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>시업정보</span>
+                                  <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                    {workItems.map((item, wIdx) => (
+                                      <div key={wIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                        <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                        <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
                               {/* 나머지 정보 (기존 방식) */}
                               {otherItems.map((row, idx) => (
                                 <React.Fragment key={idx}>
@@ -1094,50 +1139,6 @@ function App() {
                                     )
                                   )}
 
-                                  {/* 주소 바로 밑에 좌표 표시 */}
-                                  {row.label === '주소' && coordItems.length > 0 && (
-                                    <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(156, 39, 176, 0.03)', borderTop: 'none' }}>
-                                      <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>좌표</span>
-                                      <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                        {coordItems.map((item, cIdx) => (
-                                          <div key={cIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                            <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                            <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* 좌표 바로 밑에 토지이용/표본점종류 표시 */}
-                                  {row.label === '주소' && landTypeItems.length > 0 && (
-                                    <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(76, 175, 80, 0.03)', borderTop: 'none' }}>
-                                      <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>토지이용/표본점정보</span>
-                                      <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                        {landTypeItems.map((item, ltIdx) => (
-                                          <div key={ltIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                            <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                            <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* 토지이용/표본점정보 바로 밑에 시업정보 표시 */}
-                                  {row.label === '주소' && workItems.length > 0 && (
-                                    <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(63, 81, 181, 0.03)', borderTop: 'none' }}>
-                                      <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>시업정보</span>
-                                      <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                        {workItems.map((item, wIdx) => (
-                                          <div key={wIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                            <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                            <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
 
                                   {/* 표본점현지정보 바로 밑에 비산림면적 표시 */}
                                   {row.label === '표본점현지정보' && nonForestItems.length > 0 && (
