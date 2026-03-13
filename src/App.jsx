@@ -1152,28 +1152,13 @@ function App() {
                                   </div>
                                 )}
 
-                                {/* 표본점현지정보 & 비산림면적 */}
-                                {(fieldInfoVal !== '-' || nonForestItems.length > 0) && (
-                                  <>
-                                    <div className="data-row multiline-row">
-                                      <span className="label">표본점현지정보</span>
-                                      <span className="value">{fieldInfoVal}</span>
-                                      <button className="copy-btn" onClick={() => copyToClipboard(fieldInfoVal)} title="복사"><Copy size={16} /></button>
-                                    </div>
-                                    {nonForestItems.length > 0 && (
-                                      <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(0, 188, 212, 0.03)', borderTop: 'none' }}>
-                                        <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>비산림면적</span>
-                                        <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                                          {nonForestItems.map((item, nIdx) => (
-                                            <div key={nIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
-                                              <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
-                                              <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
+                                {/* 표본점현지정보 */}
+                                {fieldInfoVal !== '-' && (
+                                  <div className="data-row multiline-row">
+                                    <span className="label">표본점현지정보</span>
+                                    <span className="value">{fieldInfoVal}</span>
+                                    <button className="copy-btn" onClick={() => copyToClipboard(fieldInfoVal)} title="복사"><Copy size={16} /></button>
+                                  </div>
                                 )}
 
                                 {/* 야생동물서식흔적 */}
@@ -1233,6 +1218,21 @@ function App() {
                                       </div>
                                     )}
                                   </>
+                                )}
+                                
+                                {/* 비산림면적 (가장 밑으로 이동) */}
+                                {nonForestItems.length > 0 && (
+                                  <div className="data-row multiline-row" style={{ backgroundColor: 'rgba(0, 188, 212, 0.03)', borderTop: (remarkVal !== '-' || distItems.length > 0 || habitatVal !== '-' || fieldInfoVal !== '-') ? 'none' : '1px solid var(--border-color)' }}>
+                                    <span className="label" style={{ fontSize: '0.8rem', opacity: 0.8 }}>비산림면적</span>
+                                    <div className="grouped-row" style={{ width: '100%', background: 'transparent', padding: 0, border: 'none', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                                      {nonForestItems.map((item, nIdx) => (
+                                        <div key={nIdx} className="group-item" style={{ minWidth: 'unset', flex: 1 }} onClick={() => copyToClipboard(item.value)}>
+                                          <span className="group-label" style={{ fontSize: '0.7rem' }}>{item.label}</span>
+                                          <span className="group-value" style={{ fontSize: '0.9rem', fontWeight: '500' }}>{item.value || '-'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
                                 )}
                               </div>
                             </>
